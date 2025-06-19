@@ -1,5 +1,5 @@
 module top(
-    input wire clk100mhz,
+    input wire clk100m,
     output wire [3:0] led
 );
 
