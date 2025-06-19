@@ -9,6 +9,7 @@ module top(
     always @(posedge clk100m) begin
         if (!rstn) begin
             leds <= 16'h0001;
+            counter <= 0;
         end else begin
             if (counter >= 50000000) begin
                 counter <= 0;
