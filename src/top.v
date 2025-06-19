@@ -13,7 +13,7 @@ module top(
             if (counter >= 50000000) begin
                 counter <= 0;
                 leds <= {leds[14:0], leds[15]};
-            end else if (counter == 0) begin
+            end else begin
                 counter <= counter + 1;
             end
         end
