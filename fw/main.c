@@ -3,10 +3,9 @@
 #include "stdio.h"
 #include "xiomodule.h"
 
-
 XIOModule uart;
 
-void send_str(char* pstr) {
+void print_str(char* pstr) {
     usleep(1000);
     while (*pstr != '\0') {
         XIOModule_Send(&uart, (u8*)pstr++, 1);
@@ -14,20 +13,44 @@ void send_str(char* pstr) {
     }
 }
 
-void getch(char* pstr) {
-    while (XIOModule_Recv(&uart, (u8*)pstr, 1) == 0) {}
+u8 get_ch() {
+    u8 c;
+    while (XIOModule_Recv(&uart, &c, 1) == 0) {}
+    return c;
 }
 
-void set_gpio(u32 value) {
+void set_pwr_en(u32 value) {
     XIOModule_DiscreteWrite(&uart, 1, value);
+}
+
+void set_opt_en(u32 value) {
+    XIOModule_DiscreteWrite(&uart, 2, value);
 }
 
 int main() {
     XIOModule_Initialize(&uart, XPAR_CONTROLLER_IOMODULE_0_BASEADDR);
-
-    u32 i = 0;
     while (1) {
-        set_gpio(i++);
-        usleep(1000000);
+        print_str("Press key:!\n\r");
+        print_str("    p: Power Enable\n\r");
+        print_str("    o: Opt Enable\n\r");
+        print_str("    d: Disable\n\r");
+        u8 c = get_ch();
+        switch (c) {
+            case 'p':
+                print_str("Power Enable\n\r");
+                set_pwr_en(0xffffffff);
+                break;
+            case 'o':
+                print_str("Opt Enable\n\r");
+                set_opt_en(0xffffffff);
+                break;
+            case 'd':
+                print_str("Disable\n\r");
+                set_pwr_en(0);
+                set_opt_en(0);
+                break;
+            default:
+                print_str("Unknown command\n\r");
+        }
     }
 }
