@@ -9,5 +9,5 @@ module user(
     genvar i;
     generate for (i = 0; i < NUM_MODS; i = i + 1) begin: gen_duts
         // instantiate a single block ram
-    endfor endgenerate
+    end endgenerate
 endmodule
