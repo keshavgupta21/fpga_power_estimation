@@ -25,8 +25,9 @@ module user(
             end
         end
 
-        // Generate random vaules if needed
+        // Generate random values with an LFSR (65534 cycles period)
         reg [15:0] lfsr;
+        reg [31:0] counter;
 
         wire bit;
         assign bit = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5));
