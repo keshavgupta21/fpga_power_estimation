@@ -24,7 +24,6 @@ module user(
             end
         end
 
-
         // Generate random values with an LFSR (65534 cycles period)
         reg [15:0] lfsr;
 
