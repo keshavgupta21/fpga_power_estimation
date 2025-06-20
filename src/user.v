@@ -5,7 +5,7 @@ module user(
     input wire [31:0] pwr_en_in,
     output reg [31:0] dummy_out,
 
-    output reg leds [15:0]
+    output reg [15:0] leds
 );
     // Instatiate NUM_MODULES user modules
     localparam NUM_MODULES = 32;
