@@ -23,23 +23,23 @@ module user(
             end
         end
 
-        assign dummy = 0;
 
-        // // Generate random values with an LFSR (65534 cycles period)
-        // reg [15:0] lfsr;
+        // Generate random values with an LFSR (65534 cycles period)
+        reg [15:0] lfsr;
 
-        // wire bit;
-        // assign bit = ((lfsr[0]) ^ (lfsr[2]) ^ (lfsr[3]) ^ (lfsr[5]));
+        wire bit;
+        assign bit = ((lfsr[0]) ^ (lfsr[2]) ^ (lfsr[3]) ^ (lfsr[5]));
 
-        // always @(posedge clk100m) begin
-        //     if (!rstn) begin
-        //         lfsr <= (i + 1); // Initialize LFSR with module index (non-zero)
-        //     end else begin
-        //         lfsr <= {bit, lfsr[15:1]};
-        //     end
-        // end
+        always @(posedge clk100m) begin
+            if (!rstn) begin
+                lfsr <= (i + 1); // Initialize LFSR with module index (non-zero)
+            end else begin
+                lfsr <= {bit, lfsr[15:1]};
+            end
+        end
 
-        // // Generate user module instances to be enabled if pwr_en is high
-        // //   and to generate dummy output in order to not get optimized out.
+        // Generate user module instances to be enabled if pwr_en is high
+        //   and to generate dummy output in order to not get optimized out.
+        assign dummy = lfsr[0];
     end endgenerate
 endmodule
