@@ -19,7 +19,7 @@ void getch(char* pstr) {
 }
 
 void set_gpio(u32 value) {
-    XIOModule_DiscreteWrite(&uart, 0, value);
+    XIOModule_DiscreteWrite(&uart, 1, value);
 }
 
 int main() {
