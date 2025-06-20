@@ -50,7 +50,7 @@ module user(
             .wea(pwr_en && opt_en),
             .addra(lfsr[9:0]),
             .dina(lfsr[15:10]),
-            .douta(douta),
+            .douta(douta)
         );
         
     end endgenerate
