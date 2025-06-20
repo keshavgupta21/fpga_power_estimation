@@ -6,8 +6,9 @@ module user(
     output reg [31:0] dummy_out
 );
     // Instatiate NUM_MODULES user modules
-    // localparam NUM_MODULES = 32;
-    // genvar i;
+    localparam NUM_MODULES = 32;
+    
+    genvar i;
     generate for (i = 0; i < NUM_MODULES; i = i + 1) begin: gen_duts
         // Sandwich user module in registers
         reg pwr_en;
