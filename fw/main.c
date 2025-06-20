@@ -15,8 +15,11 @@ void send_str(char* pstr) {
     }
 }
 
-void recv_str(char* pstr, u32 n) {
-    XIOModule_Recv(&uart, (u8*)pstr, n);
+void wait_recv_str(char* pstr, u32 n) {
+    u32 recd = 0;
+    while (recd < n) {
+        recd += XIOModule_Recv(&uart, (u8*)pstr + recd, n - recd);
+    }
 }
 
 int main() {
@@ -25,7 +28,14 @@ int main() {
 
     while (1) {
         usleep(1000000);
-        recv_str(str, 10);
-        send_str(str);
+        send_str("Press a to print hello world, b to print goodbye\n");
+        wait_recv_str(str, 1);
+        if (str[0] == 'a') {
+            send_str("Hello World!\n");
+        } else if (str[0] == 'b') {
+            send_str("Goodbye!\n");
+        } else {
+            send_str("Unknown command\n");
+        }
     }
 }
