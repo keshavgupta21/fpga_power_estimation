@@ -248,6 +248,7 @@ proc create_root_design { parentCell } {
     CONFIG.USE_BOARD_FLOW {true} \
     CONFIG.USE_GPI1 {1} \
     CONFIG.USE_GPO1 {1} \
+    CONFIG.USE_GPO2 {1} \
   ] $controller
 
 
@@ -268,6 +269,8 @@ proc create_root_design { parentCell } {
   # Create port connections
   connect_bd_net -net controller_GPIO1_tri_o  [get_bd_pins controller/GPIO1_tri_o] \
   [get_bd_pins user_dut/pwr_en_in]
+  connect_bd_net -net controller_GPIO2_tri_o  [get_bd_pins controller/GPIO2_tri_o] \
+  [get_bd_pins user_dut/opt_en_in]
   connect_bd_net -net reset_1  [get_bd_ports rstn] \
   [get_bd_pins controller/Reset] \
   [get_bd_pins user_dut/rstn]
@@ -283,7 +286,6 @@ proc create_root_design { parentCell } {
   # Restore current instance
   current_bd_instance $oldCurInst
 
-  validate_bd_design
   save_bd_design
 }
 # End of create_root_design()
@@ -295,4 +297,6 @@ proc create_root_design { parentCell } {
 
 create_root_design ""
 
+
+common::send_gid_msg -ssname BD::TCL -id 2053 -severity "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
 
