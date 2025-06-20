@@ -2,17 +2,8 @@ module user(
     input wire clk100m,
     input wire rstn,
 
-    input wire en
+    input wire pwr_en
 );
-
-    // Gate the clock using based on clken
-    wire clk;
-    BUFGCE clk_bufg (
-        .I(clk100m),
-        .CE(en),
-        .O(clk)
-    );
-
     // Instatiate NUM_MODS user modules
     localparam NUM_MODS = 100;
     genvar i;
