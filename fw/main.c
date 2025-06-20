@@ -18,19 +18,16 @@ void getch(char* pstr) {
     while (XIOModule_Recv(&uart, (u8*)pstr, 1) == 0) {}
 }
 
+void set_gpio(u32 value) {
+    XIOModule_DiscreteWrite(&uart, 0, value);
+}
+
 int main() {
     XIOModule_Initialize(&uart, XPAR_CONTROLLER_IOMODULE_0_BASEADDR);
-    char str[256];
 
+    u32 i = 0;
     while (1) {
-        send_str("Press a to print hello world, b to print goodbye\n\r");
-        getch(str);
-        if (str[0] == 'a') {
-            send_str("Hello World!\n\r");
-        } else if (str[0] == 'b') {
-            send_str("Goodbye!\n\r");
-        } else {
-            send_str("Unknown command\n\r");
-        }
+        set_gpio(i++);
+        usleep(1000000);
     }
 }
