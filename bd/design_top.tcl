@@ -1,6 +1,6 @@
 
 ################################################################
-# This is a generated script based on design: design_1
+# This is a generated script based on design: design_top
 #
 # Though there are limitations about the generated script,
 # the main purpose of this utility is to make learning
@@ -41,7 +41,14 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 ################################################################
 
 # To test this script, run the following commands from Vivado Tcl console:
-# source design_1_script.tcl
+# source design_top_script.tcl
+
+
+# The design that will be created by this Tcl script contains the following 
+# module references:
+# user
+
+# Please add the sources of those modules before sourcing this Tcl script.
 
 # If there is no project opened, this script will create a
 # project, but make sure you do not have an existing project
@@ -56,7 +63,7 @@ if { $list_projs eq "" } {
 
 # CHANGE DESIGN NAME HERE
 variable design_name
-set design_name design_1
+set design_name design_top
 
 # If you do not already have an existing IP Integrator design open,
 # you can create a design using the following command:
@@ -150,6 +157,31 @@ xilinx.com:ip:microblaze_mcs:3.0\
 
 }
 
+##################################################################
+# CHECK Modules
+##################################################################
+set bCheckModules 1
+if { $bCheckModules == 1 } {
+   set list_check_mods "\ 
+user\
+"
+
+   set list_mods_missing ""
+   common::send_gid_msg -ssname BD::TCL -id 2020 -severity "INFO" "Checking if the following modules exist in the project's sources: $list_check_mods ."
+
+   foreach mod_vlnv $list_check_mods {
+      if { [can_resolve_reference $mod_vlnv] == 0 } {
+         lappend list_mods_missing $mod_vlnv
+      }
+   }
+
+   if { $list_mods_missing ne "" } {
+      catch {common::send_gid_msg -ssname BD::TCL -id 2021 -severity "ERROR" "The following module(s) are not found in the project: $list_mods_missing" }
+      common::send_gid_msg -ssname BD::TCL -id 2022 -severity "INFO" "Please add source files for the missing module(s) above."
+      set bCheckIPsPassed 0
+   }
+}
+
 if { $bCheckIPsPassed != 1 } {
   common::send_gid_msg -ssname BD::TCL -id 2023 -severity "WARNING" "Will not continue with creation of design due to the error(s) above."
   return 3
@@ -198,33 +230,52 @@ proc create_root_design { parentCell } {
 
 
   # Create ports
-  set sys_clock [ create_bd_port -dir I -type clk -freq_hz 100000000 sys_clock ]
+  set clk100m [ create_bd_port -dir I -type clk -freq_hz 100000000 clk100m ]
   set_property -dict [ list \
    CONFIG.PHASE {0.0} \
- ] $sys_clock
-  set reset [ create_bd_port -dir I -type rst reset ]
+ ] $clk100m
+  set rstn [ create_bd_port -dir I -type rst rstn ]
   set_property -dict [ list \
    CONFIG.POLARITY {ACTIVE_LOW} \
- ] $reset
+ ] $rstn
 
-  # Create instance: microblaze_mcs_0, and set properties
-  set microblaze_mcs_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:microblaze_mcs:3.0 microblaze_mcs_0 ]
+  # Create instance: controller, and set properties
+  set controller [ create_bd_cell -type ip -vlnv xilinx.com:ip:microblaze_mcs:3.0 controller ]
   set_property -dict [list \
     CONFIG.CLK_BOARD_INTERFACE {sys_clock} \
     CONFIG.RESET_BOARD_INTERFACE {reset} \
     CONFIG.UART_BOARD_INTERFACE {usb_uart} \
     CONFIG.USE_BOARD_FLOW {true} \
-  ] $microblaze_mcs_0
+    CONFIG.USE_GPI1 {1} \
+    CONFIG.USE_GPO1 {1} \
+  ] $controller
 
 
+  # Create instance: user_dut, and set properties
+  set block_name user
+  set block_cell_name user_dut
+  if { [catch {set user_dut [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $user_dut eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create interface connections
-  connect_bd_intf_net -intf_net microblaze_mcs_0_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins microblaze_mcs_0/UART]
+  connect_bd_intf_net -intf_net controller_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins controller/UART]
 
   # Create port connections
-  connect_bd_net -net reset_1  [get_bd_ports reset] \
-  [get_bd_pins microblaze_mcs_0/Reset]
-  connect_bd_net -net sys_clock_1  [get_bd_ports sys_clock] \
-  [get_bd_pins microblaze_mcs_0/Clk]
+  connect_bd_net -net controller_GPIO1_tri_o  [get_bd_pins controller/GPIO1_tri_o] \
+  [get_bd_pins user_dut/pwr_en_in]
+  connect_bd_net -net reset_1  [get_bd_ports rstn] \
+  [get_bd_pins controller/Reset] \
+  [get_bd_pins user_dut/rstn]
+  connect_bd_net -net sys_clock_1  [get_bd_ports clk100m] \
+  [get_bd_pins controller/Clk] \
+  [get_bd_pins user_dut/clk100m]
+  connect_bd_net -net user_dut_dummy_out  [get_bd_pins user_dut/dummy_out] \
+  [get_bd_pins controller/GPIO1_tri_i]
 
   # Create address segments
 
