@@ -1,4 +1,4 @@
-# Steps to replicate vivado project
+# Steps to replicate project
 
 1. Make a vivado project with appropriate board.
 2. Add appropriate constraints from xdc
@@ -11,6 +11,9 @@
 9. Include fw/main.c into sources and build.
 10. Associate the resulting ELF file with the microblaze.
 11. Generate bitstream and run.
+
+# Notes
+- platform_lib in fw is olny used for reference, not actually built with.
 
 # TODOs
 - Script to generate vivado (and vitis?) project for a board all at once
