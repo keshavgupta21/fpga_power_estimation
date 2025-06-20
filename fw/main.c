@@ -27,7 +27,6 @@ int main() {
     char str[256];
 
     while (1) {
-        usleep(1000000);
         send_str("Press a to print hello world, b to print goodbye\n");
         wait_recv_str(str, 1);
         if (str[0] == 'a') {
