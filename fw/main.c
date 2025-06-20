@@ -23,14 +23,14 @@ int main() {
     char str[256];
 
     while (1) {
-        send_str("Press a to print hello world, b to print goodbye\n");
+        send_str("Press a to print hello world, b to print goodbye\n\r");
         getch(str);
         if (str[0] == 'a') {
-            send_str("Hello World!\n");
+            send_str("Hello World!\n\r");
         } else if (str[0] == 'b') {
-            send_str("Goodbye!\n");
+            send_str("Goodbye!\n\r");
         } else {
-            send_str("Unknown command\n");
+            send_str("Unknown command\n\r");
         }
     }
 }
