@@ -30,14 +30,14 @@ module user(
         reg [31:0] counter;
 
         wire bit;
-        assign bit = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5));
+        assign bit = ((lfsr[0]) ^ (lfsr[2]) ^ (lfsr[3]) ^ (lfsr[5]));
 
         always @(posedge clk100m) begin
             if (!rstn) begin
                 lfsr <= (i + 1); // Initialize LFSR with module index (non-zero)
                 counter <= 0;
             end else if (counter == 0) begin
-                lfsr <= ((lfsr >> 1) | (bit << 15)) & 0xffff;
+                lfsr <= {bit, lfsr[15:1]};
             end else if (counter < 50000000) begin
                 counter <= counter + 1;
             end else begin
