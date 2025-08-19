@@ -1,6 +1,6 @@
 # Steps to replicate project
 
-These project have been set up with Vivado/Vitis 2024.1, so YMMV with other Vivado versions.
+These projects have been set up with Vivado/Vitis 2024.1, so YMMV with other Vivado versions.
 
 1. Make a vivado project with appropriate board.
 2. Add appropriate constraints from xdc
